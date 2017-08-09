@@ -6,18 +6,18 @@ local status = tonumber(query["status"]) or 0;
 local pagesize = tonumber(query["pagesize"]) or 20;
 local start = (page - 1) * pagesize;
 local len = pagesize - (total % pagesize);
-local map = {0= "默认全部",1= "未使用",3= "已过期",5= "已使用"};
+local map = {"默认全部","未使用","","已过期","","已使用"};
 local data = {};
-for var=0,len do  
-    data.insert({
+for i=0,len do  
+    table.insert(data,{
         id= start + i,
         amount= 10580,
         title= "老用户专享优惠券" .. start .. i,
         start_time= "2017-06-15 15:12:26",
         end_time= "2017-07-27 15:12:26",
-        description: "购买年以上会员立减专用",
+        description= "购买年以上会员立减专用",
         status= status,
-        status_text= map[status]
+        status_text= map[status+1]
     });
 end
 
@@ -28,8 +28,8 @@ ngx.say(cjson.encode({
     data = {
         total = total,
         pagesize = pagesize,
-        page: page,
-        lists: data
+        page= page,
+        lists= data
     },
     msg = "请求成功"
 }));
