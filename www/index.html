@@ -12,14 +12,28 @@
     <div id="app">
         <index/>
     </div>
+    <div id="todo-list-example">
+        <!--
+            addNewTodo($event) 传递触发事件
+        -->
+        <input v-model="newTodoText" @keyup.enter="addNewTodo($event)" placeholder="Add a todo">
+        <ul>
+            <li is="todo-itemx" v-for="(todo, index) in todos" :key="todo.id" :title="todo.title" @remove="todos.splice(index, 1)"></li>
+        </ul>
+    </div>
     <div id="vuex">
     </div>
     <div id="example">
+        <h6 v-html="name"></h6>
         <ul>
             <li v-for="tab in tabs">
                 {{tab.text | uppercase}}
             </li>
         </ul>
+    </div>
+    <div id="watch-example">
+        <p>Ask a yes/no question:<input v-model="question"></p>
+        <p>{{ answer }}</p>
     </div>
     <script src="/script/index.min.js"></script>
 </body>

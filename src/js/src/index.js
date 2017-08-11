@@ -1,22 +1,32 @@
 //es6加载模块
 import Vue from 'vue';
-import Vuex from 'vuex';
+import _ from 'lodash';
 import $ from 'jquery';
+import Vuex from 'vuex';
 import axios from 'axios';
 import app from './views/index.vue';
 Vue.use(Vuex);
+Vue.component('todo-item', {
+    props: ['todo'], //读取父级组件传入的数据
+    template: '<li>{{ todo.text }}</li>'
+})
 const store = new Vuex.Store({
     state: {
-        count: 0
+        count: 0,
+        items: [
+            { id: 0, text: '蔬菜' },
+            { id: 1, text: '奶酪' },
+            { id: 2, text: '牛肉' }
+        ]
     },
     mutations: {
         increment(state) {
-            state.count++
+            state.count++;
+            state.items.push({ id: 3, text: '鱼类' });
         }
     }
 });
-store.commit('increment');
-console.log(store.state.count) // -> 1
+//定义过滤器
 Vue.filter('uppercase', function(value) {
     return value.toUpperCase();
 });
@@ -32,17 +42,39 @@ axios.get("http://192.168.204.61/upkey?name=35892.mp4&size=8290785").then((respo
     console.log(error);
 });
 console.log($("#app"));
-let datasource = { tabs: [{ text: "巴士" }, { text: "快车" }, { text: "专车" }, { text: "顺风车" }, { text: "出租车" }, { text: "代驾" }] };
-new Vue({ el: "#example", data: datasource });
+let datasource = {
+    name: "测试",
+    tabs: [
+        { text: "巴士" },
+        { text: "快车" },
+        { text: "专车" },
+        { text: "顺风车" },
+        { text: "出租车" },
+        { text: "代驾" }
+    ]
+};
+const vuea = new Vue({
+    el: "#example",
+    data: datasource,
+    created: function() {
+        // `this` 指向 vm 实例
+        console.log('a is: ' + this.name);
+    }
+});
+//监听数据改变
+vuea.$watch('name', function(newVal, oldVal) {
+    console.log(newVal, oldVal);
+});
 setTimeout(() => {
+    datasource.name = '<a href="javascript:void(0);">HTML更换</a>';
     datasource.tabs.push({ text: "大卡车" }, { text: "xssdsd" });
     store.commit('increment');
 }, 2000);
 const Counter = {
     template: `<div>{{ count }}</div>`,
-    computed: {
+    computed: { //数据改变进行调用
         count() {
-            return store.state.count
+            return store.state.count;
         }
     }
 };
@@ -50,6 +82,76 @@ const vuexv = new Vue({
     el: '#vuex',
     // 把 store 对象提供给 “store” 选项，这可以把 store 的实例注入所有的子组件
     store,
-    components: { Counter },
-    template: `<div class="app"><counter></counter></div>`
+    components: {
+        Counter
+    },
+    template: `<div class="app"><counter></counter><ol><todo-item  v-for="item in this.$store.state.items" :todo="item" :key="item.id"></todo-item></ol></div>`
 });
+const watchExampleVM = new Vue({
+    el: '#watch-example',
+    data: {
+        question: '',
+        answer: '请提你的问题，我才可以解答!'
+    },
+    watch: {
+        // 如果 question 发生改变，这个函数就会运行
+        question: function(newQuestion) {
+            this.answer = '提问中...';
+            this.getAnswer();
+        }
+    },
+    methods: {
+        // _.debounce 是一个通过 lodash 限制操作频率的函数。
+        // 在这个例子中，我们希望限制访问yesno.wtf/api的频率
+        // ajax请求直到用户输入完毕才会发出
+        // 学习更多关于 _.debounce function (and its cousin
+        // _.throttle), 参考: https://lodash.com/docs#debounce 工具库
+        getAnswer: _.debounce(function() { //工具库
+                if (this.question.indexOf('?') === -1) {
+                    this.answer = '问题通常都会问号';
+                    return;
+                };
+                this.answer = '解答中...'
+                axios.get('https://yesno.wtf/api').then((response) => {
+                    this.answer = _.capitalize(response.data.answer);
+                }).catch((error) => {
+                    this.answer = '问题API异常. ' + error;
+                });
+            }, 500 // 这是我们为用户停止输入等待的毫秒数
+        )
+    }
+});
+Vue.component('todo-itemx', {
+    template: `<li>{{ title }}<button @click="$emit('remove')">X</button></li>`,
+    props: ['title']
+})
+new Vue({
+    el: '#todo-list-example',
+    data: {
+        newTodoText: '',
+        todos: [{
+                id: 1,
+                title: 'Do the dishes',
+            },
+            {
+                id: 2,
+                title: 'Take out the trash',
+            },
+            {
+                id: 3,
+                title: 'Mow the lawn'
+            }
+        ],
+        nextTodoId: 4
+    },
+    methods: {
+        addNewTodo: function(ev) {
+            console.log(ev);
+            this.todos.push({
+                id: this.nextTodoId++,
+                title: this.newTodoText
+            });
+            this.newTodoText = '';
+        }
+    }
+})

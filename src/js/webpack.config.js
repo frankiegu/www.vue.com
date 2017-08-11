@@ -10,6 +10,7 @@ const os = require('os');
 const path = require('path');
 const webpack = require('webpack');
 const lessplugin = require("extract-text-webpack-plugin");
+const serviceworker = require('sw-precache-webpack-plugin');
 const publicpath = path.join(path.dirname(path.dirname(__dirname)), "www");
 const utils = {
     analysis: (data) => {
