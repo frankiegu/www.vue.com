@@ -9,7 +9,7 @@ Vue.use(Vuex);
 Vue.component('todo-item', {
     props: ['todo'], //读取父级组件传入的数据
     template: '<li>{{ todo.text }}</li>'
-})
+});
 const store = new Vuex.Store({
     state: {
         count: 0,
@@ -55,7 +55,9 @@ let datasource = {
 };
 const vuea = new Vue({
     el: "#example",
-    data: datasource,
+    data() {
+        return datasource;
+    },
     created: function() {
         // `this` 指向 vm 实例
         console.log('a is: ' + this.name);
@@ -64,6 +66,10 @@ const vuea = new Vue({
 //监听数据改变
 vuea.$watch('name', function(newVal, oldVal) {
     console.log(newVal, oldVal);
+});
+Vue.nextTick(function() {
+    console.log("更新数据", vuea.$el);
+    //vm.$el.textContent === 'new message' // true
 });
 setTimeout(() => {
     datasource.name = '<a href="javascript:void(0);">HTML更换</a>';
@@ -89,9 +95,11 @@ const vuexv = new Vue({
 });
 const watchExampleVM = new Vue({
     el: '#watch-example',
-    data: {
-        question: '',
-        answer: '请提你的问题，我才可以解答!'
+    data() {
+        return {
+            question: '',
+            answer: '请提你的问题，我才可以解答!'
+        }
     },
     watch: {
         // 如果 question 发生改变，这个函数就会运行
@@ -122,36 +130,76 @@ const watchExampleVM = new Vue({
     }
 });
 Vue.component('todo-itemx', {
-    template: `<li>{{ title }}<button @click="$emit('remove')">X</button></li>`,
-    props: ['title']
+    template: `<li>{{ title }}<button @click="click_remove">X</button></li>`,
+    props: ['title'],
+    methods: {
+        click_remove() {
+            //子组件派发删除事件 remove
+            this.$emit('remove');
+        }
+    }
 })
 new Vue({
     el: '#todo-list-example',
-    data: {
-        newTodoText: '',
-        todos: [{
-                id: 1,
-                title: 'Do the dishes',
-            },
-            {
-                id: 2,
-                title: 'Take out the trash',
-            },
-            {
-                id: 3,
-                title: 'Mow the lawn'
-            }
-        ],
-        nextTodoId: 4
+    data() {
+        return {
+            newTodoText: '',
+            todos: [{
+                    id: 1,
+                    title: 'Do the dishes',
+                },
+                {
+                    id: 2,
+                    title: 'Take out the trash',
+                },
+                {
+                    id: 3,
+                    title: 'Mow the lawn'
+                }
+            ],
+            nextTodoId: 4
+        }
     },
     methods: {
-        addNewTodo: function(ev) {
-            console.log(ev);
+        addNewTodo: function(type, event) {
+            if (event) {
+                console.log(type, event.target.tagName);
+            };
             this.todos.push({
                 id: this.nextTodoId++,
                 title: this.newTodoText
             });
             this.newTodoText = '';
+        },
+        removefun: function(index) {
+            this.todos.splice(index, 1);
         }
+    },
+    directives: { //注册一个全局自定义指令 v-focus
+        focus: {
+            inserted: function(el) {
+                // 聚焦元素
+                el.focus();
+            }
+        }
+    }
+});
+var data = { counter: 0 };
+Vue.component('simple-counter', {
+    template: '<button v-on:click="counter += 1">{{ counter }}</button>',
+    // 技术上 data 的确是一个函数了，因此 Vue 不会警告，
+    // 但是我们返回给每个组件的实例的却引用了同一个data对象
+    data: function() {
+        return data;
+    }
+})
+new Vue({
+    el: '#example-2'
+});
+//过渡动画
+new Vue({
+    el: '#demo',
+    data: {
+        show: true
     }
 })

@@ -5,6 +5,27 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
     <title>VUE练习</title>
+    <style>
+        .bounce-enter-active {
+            animation: bounce-in .5s;
+        }
+        
+        .bounce-leave-active {
+            animation: bounce-in .5s reverse;
+        }
+        
+        @keyframes bounce-in {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.5);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
     <script src="/script/libs/commons.min.js"></script>
 </head>
 
@@ -16,9 +37,13 @@
         <!--
             addNewTodo($event) 传递触发事件
         -->
-        <input v-model="newTodoText" @keyup.enter="addNewTodo($event)" placeholder="Add a todo">
+        <input v-focus v-model="newTodoText" @keyup.enter="addNewTodo('addTodo', $event)" placeholder="Add a todo">
         <ul>
-            <li is="todo-itemx" v-for="(todo, index) in todos" :key="todo.id" :title="todo.title" @remove="todos.splice(index, 1)"></li>
+            <!--
+                is 继承todo-itemx自定义组件
+                监听@remove事件
+             -->
+            <li is="todo-itemx" v-for="(todo, index) in todos" :key="todo.id" :title="todo.title" @remove="removefun(index)"></li>
         </ul>
     </div>
     <div id="vuex">
@@ -31,10 +56,22 @@
             </li>
         </ul>
     </div>
+    <div id="demo">
+        <button @click="show = !show">Toggle</button>
+        <transition name="bounce">
+            <p v-if="show">hello</p>
+        </transition>
+    </div>
     <div id="watch-example">
         <p>Ask a yes/no question:<input v-model="question"></p>
         <p>{{ answer }}</p>
     </div>
+    <div id="example-2">
+        <simple-counter></simple-counter>
+        <simple-counter></simple-counter>
+        <simple-counter></simple-counter>
+    </div>
+
     <script src="/script/index.min.js"></script>
 </body>
 

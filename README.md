@@ -21,10 +21,16 @@ OpenResty 是一个基于 Nginx 与 Lua 的高性能 Web 平台，其内部集�
 ```
 示例:http://127.0.0.1/index.html
 ```
+4. node动态渲染vue服务端输出(运行App.js)。 
 
+```
+示例:http://127.0.0.1/ssrvue
+```
 ## 目录结构
 ```
 .
+├── App.js(node简易服务、主要用于没有nginx环境运行vue)
+├── package.json(依赖包安装配置文件)
 ├── src
 │   ├── bin(shell启停脚本)
 │   │   ├── start.sh

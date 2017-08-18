@@ -41,11 +41,12 @@ const config = {
         suffix: ".min.js",
         output: "script/",
         datasource: {
-            index: "./src/index.js",
-            main: "./src/main.js",
             vue: "./src/vue.js",
-            virtual: "./src/virtual.js",
-            play: "./src/play.js"
+            play: "./src/play.js",
+            main: "./src/main.js",
+            route: "./src/route.js",
+            index: "./src/index.js",
+            virtual: "./src/virtual.js"
         }
     },
     css: {
@@ -63,6 +64,7 @@ const webpackconfig = {
     output: {
         path: publicpath, //输出目录的配置，模板、样式、脚本、图片等资源的路径配置都相对于它
         filename: '[name]', //每个页面对应的主js的生成配置
+        chunkFilename: 'script/chunks/[name].[chunkHash].js'
     },
     module: {
         rules: [{

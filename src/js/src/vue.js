@@ -2,6 +2,7 @@ import Vue from 'vue';
 import $ from 'jquery';
 import Vuex from 'vuex';
 import axios from 'axios';
+import VueRouter from 'vue-router';
 import uservue from './views/user.vue';
 import vuelist from './views/vuelist.vue';
 const loadding = document.querySelector("#loadding");
@@ -11,6 +12,7 @@ const base = {
     }
 }
 Vue.use(Vuex);
+Vue.use(VueRouter);
 if (window.userinfo) {
     base.mydb = {
         user: new Vuex.Store({
