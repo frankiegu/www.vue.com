@@ -64,7 +64,8 @@ const webpackconfig = {
     output: {
         path: publicpath, //输出目录的配置，模板、样式、脚本、图片等资源的路径配置都相对于它
         filename: '[name]', //每个页面对应的主js的生成配置
-        chunkFilename: 'script/chunks/[name].[chunkHash].js'
+        //chunkFilename: 'script/chunks/[name].[chunkHash].js',
+        chunkFilename: "script/chunks/[id].chunk.js",
     },
     module: {
         rules: [{

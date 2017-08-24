@@ -4,7 +4,6 @@ import _ from 'lodash';
 import $ from 'jquery';
 import Vuex from 'vuex';
 import axios from 'axios';
-import app from './views/index.vue';
 Vue.use(Vuex);
 Vue.component('todo-item', {
     props: ['todo'], //读取父级组件传入的数据
@@ -30,13 +29,15 @@ const store = new Vuex.Store({
 Vue.filter('uppercase', function(value) {
     return value.toUpperCase();
 });
-new Vue({ //创建一个vue实例, 挂载在body上面
+new Vue({ //创建一个异步vue实例, 挂载在body上面
     el: '#app',
     components: {
-        'index': app
+        'index': () => {
+            return import ('./views/index.vue');
+        }
     }
 });
-axios.get("http://192.168.204.61/upkey?name=35892.mp4&size=8290785").then((response) => {
+axios.get("/sign?name=35892.mp4&size=8290785").then((response) => {
     console.log("->", response.data)
 }).catch(function(error) {
     console.log(error);
@@ -129,16 +130,9 @@ const watchExampleVM = new Vue({
         )
     }
 });
-Vue.component('todo-itemx', {
-    template: `<li>{{ title }}<button @click="click_remove">X</button></li>`,
-    props: ['title'],
-    methods: {
-        click_remove() {
-            //子组件派发删除事件 remove
-            this.$emit('remove');
-        }
-    }
-})
+Vue.component('todo-itemx', () => {
+    return import ('./views/itemx.vue');
+});
 new Vue({
     el: '#todo-list-example',
     data() {

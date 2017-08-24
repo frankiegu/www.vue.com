@@ -243,7 +243,10 @@ const routing = {
         let body = url.parse(req.url, true);
         let query = body.query;
         let callback = query["callback"];
-        let buf = callback + '({"status":"1","sign":"7068c37999c481d783943745d8","node":"192.168.204.61"})';
+        let buf = '{"status":"1","sign":"7068c37999c481d783943745d8","node":"192.168.204.61"}';
+        if (callback) {
+            buf = callback + '(' + buf + ')';
+        };
         res.writeHead(200, {
             'Content-Length': Buffer.byteLength(buf),
             'Content-Type': 'text/plain;charset=utf-8'
