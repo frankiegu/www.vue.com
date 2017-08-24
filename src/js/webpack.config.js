@@ -118,7 +118,7 @@ const webpackconfig = {
     ]
 };
 
-module.exports = function(env) {
+module.exports = function (env) {
     let data = [config.js, config.css];
     if (env) {
         for (let type in config) {

@@ -196,4 +196,4 @@ new Vue({
     data: {
         show: true
     }
-})
+});
