@@ -1,1 +1,36 @@
-.box{color:#fd74aa;border-color:#fff}.box div{-webkit-box-shadow:0 0 5px rgba(0,0,0,.3);-o-box-shadow:0 0 5px rgba(0,0,0,.3);box-shadow:0 0 5px rgba(0,0,0,.3)}
+/*!
+ * 
+ * -------------------------------------------------------------
+ * 本人保留所有版权与权利.
+ * 
+ * https://github.com/ningxiao
+ * @version: 1.0.0
+ * @author: ningxiao
+ * @qq:363305175
+ * @description:  VUE_TEST
+ * @date: 2017/09/13 14:35:36
+ * -------------------------------------------------------------
+ */
+/*!
+ * 
+ * -------------------------------------------------------------
+ * 本人保留所有版权与权利.
+ * 
+ * https://github.com/ningxiao
+ * @version: 1.0.0
+ * @author: ningxiao
+ * @qq:363305175
+ * @description:  VUE_TEST
+ * @date: 2017/09/13 14:35:36
+ * -------------------------------------------------------------
+ */
+@charset "utf-8";
+.box {
+  color: #fd74aa;
+  border-color: #ffffff;
+}
+.box div {
+  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  -o-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}

@@ -6,22 +6,42 @@
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
     <title>VUE练习</title>
     <script src="/script/libs/commons.min.js"></script>
+    <style>
+        .fade-enter-active,
+        .fade-leave-active {
+            transition: opacity .5s
+        }
+        
+        .fade-enter,
+        .fade-leave-to {
+            opacity: 0
+        }
+        
+        .slide-fade-enter-active {
+            transition: all .3s ease;
+        }
+        
+        .slide-fade-leave-active {
+            transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+        }
+        
+        .slide-fade-enter,
+        .slide-fade-leave-to
+        /* .slide-fade-leave-active below version 2.1.8 */
+        
+        {
+            transform: translateX(10px);
+            opacity: 0;
+        }
+        
+        .nav {
+            position: absolute;
+        }
+    </style>
 </head>
 
 <body>
-    <div id="app">
-        <h1>Hello App!</h1>
-        <p>
-            <!-- 使用 router-link 组件来导航. -->
-            <!-- 通过传入 `to` 属性指定链接. -->
-            <!-- <router-link> 默认会被渲染成一个 `<a>` 标签 -->
-            <router-link to="/foo">Go to Foo</router-link>
-            <router-link to="/bar">Go to Bar</router-link>
-        </p>
-        <!-- 路由出口 -->
-        <!-- 路由匹配到的组件将渲染在这里 -->
-        <router-view></router-view>
-    </div>
+    <div id="app"></div>
     <script src="/script/main.min.js"></script>
 </body>
 

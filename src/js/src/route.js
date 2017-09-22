@@ -41,7 +41,7 @@ Vue.component('404', function(resolve) {
     require(['./pages/404.vue'], resolve)
 })
 if (!!(window.history && history.pushState)) {
-    $(window).on('popstate', checkout)
+    $(window).on('popstate', checkout);
     checkout()
     new Vue({
         el: '#app',

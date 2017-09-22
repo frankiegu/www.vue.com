@@ -9,6 +9,7 @@
 const os = require('os');
 const path = require('path');
 const webpack = require('webpack');
+const pkgjson = require('./package.json');
 const lessplugin = require("extract-text-webpack-plugin");
 const serviceworker = require('sw-precache-webpack-plugin');
 const publicpath = path.join(path.dirname(path.dirname(__dirname)), "www");
@@ -34,6 +35,27 @@ const utils = {
             };
         };
         return "127.0.0.1";
+    },
+    today: (time, format) => {
+        let data = time ? new Date(time * 1000) : new Date();
+        let date = {
+            "M+": data.getMonth() + 1,
+            "d+": data.getDate(),
+            "h+": data.getHours(),
+            "m+": data.getMinutes(),
+            "s+": data.getSeconds(),
+            "q+": Math.floor((data.getMonth() + 3) / 3),
+            "S+": data.getMilliseconds()
+        };
+        if (/(y+)/i.test(format)) {
+            format = format.replace(RegExp.$1, (data.getFullYear() + '').substr(4 - RegExp.$1.length));
+        };
+        for (let k in date) {
+            if (new RegExp("(" + k + ")").test(format)) {
+                format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+            };
+        };
+        return format;
     }
 };
 const config = {
@@ -42,6 +64,7 @@ const config = {
         output: "script/",
         datasource: {
             vue: "./src/vue.js",
+            hls: "./src/hls.js",
             play: "./src/play.js",
             main: "./src/main.js",
             route: "./src/route.js",
@@ -114,11 +137,25 @@ const webpackconfig = {
             minChunks: Infinity,
             filename: "./script/libs/commons.min.js"
         }),
+        new webpack.DefinePlugin({
+            __VERSION__: JSON.stringify(pkgjson.version)
+        }),
+        new webpack.BannerPlugin(`
+-------------------------------------------------------------
+本人保留所有版权与权利.
+
+https://github.com/ningxiao
+@version: ${pkgjson.version}
+@author: ${pkgjson.author}
+@qq:${pkgjson.qq}
+@description:  ${pkgjson.description}
+@date: ${utils.today(null, "yyyy/MM/dd hh:mm:ss")}
+-------------------------------------------------------------`),
         new webpack.optimize.ModuleConcatenationPlugin()
     ]
 };
 
-module.exports = function (env) {
+module.exports = function(env) {
     let data = [config.js, config.css];
     if (env) {
         for (let type in config) {

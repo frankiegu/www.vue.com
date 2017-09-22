@@ -255,7 +255,8 @@
         .transfer-name {
             display: block;
             float: left;
-            width: 360px;
+            width: 550px;
+            cursor: pointer;
         }
 
         .complete,
@@ -369,6 +370,13 @@
             li.find('.cancel').remove();
             uploader.removeFile(id, true); //从上传文件列表中删除  
         };
+        function upname(str){
+            var l = str.lastIndexOf(".");
+            if(l>24){
+               return str.substring(0,24)+"..."+str.substring(l);
+            };
+            return str;
+        };
         $(window).resize(resizefunc);
         resizefunc();
         if (typeof FileReader != 'undefined' && typeof XMLHttpRequest != 'undefined') {
@@ -388,14 +396,14 @@
                 auto: true,
                 pick: upbutton,
                 dnd: document.body,
-                server: '/scripts/uploadify.html',
-                //server: '/fileupload.php', 
+                //server: '/scripts/uploadify.html',
+                server: '/fileupload.php', 
                 swf: '/script/Uploader.swf',
                 fileSingleSizeLimit: 4 * 1024 * 1024 * 1024// 限制在4G  
             });
             // 当有文件被添加进队列的时候
             uploader.on('fileQueued', function (file) {
-                $("#thelist").append('<li id="' + file.id + '"><span class="transfer-name">' + file.name + ' (' + bytesToSize(file.size) + ')</span><em class="wait">等待中</em><em class="cancel" onclick=javascript:deluploader("' + file.id + '");>取消</em></li>');
+                $("#thelist").append('<li id="' + file.id + '"><span class="transfer-name" title="('+file.name+' (' + bytesToSize(file.size) +')">' + upname(file.name) + ' (' + bytesToSize(file.size) + ')</span><em class="wait">等待中</em><em class="cancel" onclick=javascript:deluploader("' + file.id + '");>取消</em></li>');
             });
             // 文件上传过程中创建进度条实时显示。
             uploader.on('uploadProgress', function (file, percentage) {
