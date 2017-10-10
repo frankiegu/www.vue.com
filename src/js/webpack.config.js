@@ -63,13 +63,13 @@ const config = {
         suffix: ".min.js",
         output: "script/",
         datasource: {
-            vue: "./src/vue.js",
-            hls: "./src/hls.js",
-            play: "./src/play.js",
-            main: "./src/main.js",
-            route: "./src/route.js",
-            index: "./src/index.js",
-            virtual: "./src/virtual.js"
+            // vue: "./src/vue.js",
+            hls: "./src/hls.js"
+                // play: "./src/play.js",
+                // main: "./src/main.js",
+                // route: "./src/route.js",
+                // index: "./src/index.js",
+                // virtual: "./src/virtual.js"
         }
     },
     css: {
@@ -81,6 +81,7 @@ const config = {
     }
 };
 const webpackconfig = {
+    devtool: 'cheap-source-map',
     entry: {
         vendor: ["vue", "vuex", "axios", "jquery"]
     },
