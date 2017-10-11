@@ -21,7 +21,7 @@ Utils.IsTouch = "ontouchend" in document ? true : false;
  * @param  {[type]} progress [description]
  * @return {[type]}          [description]
  */
-Utils.QueueImg = function (urls, complete, progress) {
+Utils.QueueImg = function(urls, complete, progress) {
     var key, url, index = arguments[3] || 0;
     var data = urls[index];
     var img = new Image();
@@ -29,7 +29,7 @@ Utils.QueueImg = function (urls, complete, progress) {
     for (key in data) {
         url = data[key];
     };
-    img.onload = function () {
+    img.onload = function() {
         bitmap[key] = img;
         index++;
         progress && progress.call(this, {
@@ -49,7 +49,7 @@ Utils.QueueImg = function (urls, complete, progress) {
  * 获取cavans的2D绘制对象
  * @param {[type]} canvas [description]
  */
-Utils.GetContext = function (canvas) {
+Utils.GetContext = function(canvas) {
     if (canvas) {
         return canvas.getContext('2d');
     };
@@ -62,9 +62,9 @@ Utils.GetContext = function (canvas) {
  * @param {function} opt_onerror 获取webgl异常是否存在回调函数
  * @return {gl} 成功返回 canvas 的webgl对象 失败返回 null
  */
-Utils.GetWebGlContext = function (canvas, opt_debug, opt_onerror) {
+Utils.GetWebGlContext = function(canvas, opt_debug, opt_onerror) {
     var gl, config = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
-    opt_onerror = opt_onerror || function (event) {
+    opt_onerror = opt_onerror || function(event) {
         console.log(event.statusMessage);
     };
     canvas.addEventListener("webglcontextcreationerror", opt_onerror, false);
@@ -94,7 +94,7 @@ Utils.GetWebGlContext = function (canvas, opt_debug, opt_onerror) {
  * @param {[type]} fragmentshader 初始化的片段着色器
  * @return {program} program  成功返回 在js里面的渲染引用 失败返回 null
  */
-Utils.InitShaders = function (gl, vertexshader, fragmentshader) {
+Utils.InitShaders = function(gl, vertexshader, fragmentshader) {
     var program, linked;
     if (!vertexshader || !fragmentshader) {
         return;
@@ -131,7 +131,7 @@ Utils.InitShaders = function (gl, vertexshader, fragmentshader) {
  * @param {string} name 顶点着色器变量名称
  * @return {int} n  成功返回 渲染点的数量 失败返回 0
  */
-Utils.InitVertexBuffers = function (gl, program, vertices, size, name) {
+Utils.InitVertexBuffers = function(gl, program, vertices, size, name) {
     var n, fsize, position, vertexbuffer;
     if (!(gl && vertices.length > 0 && size && name)) {
         console.log("传入参数错误");
@@ -174,20 +174,9 @@ Utils.InitVertexBuffers = function (gl, program, vertices, size, name) {
  * @param {element} id   页面编写着色器代码的元素对象
  * @return {shader} shader  成功返回 对应着色器对象 失败返回 null
  */
-Utils.GetShader = function (gl, id) {
-    var child, shader, error, text = "",
-        shaderScript = document.getElementById(id);
-    if (!shaderScript) {
-        return;
-    };
-    child = shaderScript.firstChild;
-    while (child) {
-        if (child.nodeType == child.TEXT_NODE) {
-            text += child.textContent;
-        };
-        child = child.nextSibling;
-    };
-    switch (shaderScript.type) {
+Utils.GetShader = function(gl, value) {
+    var shader, error;
+    switch (value.type) {
         case "x-shader/x-fragment": //片源着色器
             shader = gl.createShader(gl.FRAGMENT_SHADER);
             break;
@@ -201,7 +190,7 @@ Utils.GetShader = function (gl, id) {
         return;
     };
     //绑定着色器字符串到到着色器
-    gl.shaderSource(shader, text);
+    gl.shaderSource(shader, value.text);
     //编译着色器,并且生成着色器
     gl.compileShader(shader);
     //验证着色器创建是否成功
@@ -222,7 +211,7 @@ Utils.GetShader = function (gl, id) {
  * @param {boolean} isbool   false获取顶点片段变量 true获取片源着色器片段域
  * @return {int} 成功返回 是大于或者大于0的变量存储地址 -1为变量地址不存在
  */
-Utils.GetGpuLocation = function (gl, program, name, isbool) {
+Utils.GetGpuLocation = function(gl, program, name, isbool) {
     if (gl && program) {
         if (isbool) {
             //获取片源着色器变量失败返回null
@@ -239,7 +228,7 @@ Utils.GetGpuLocation = function (gl, program, name, isbool) {
  * @param {number} min 最小范围
  * @param {number} max 最小范围
  */
-Utils.Random = function (min, max) {
+Utils.Random = function(min, max) {
     return Math.floor(min + Math.random() * (max - min));
 };
 /**
@@ -251,7 +240,7 @@ Utils.Random = function (min, max) {
  * @param  {int} cy   鼠标点击y
  * @return {int}      新的xy坐标
  */
-Utils.LocalToGobal = function (cw, ch, rect, cx, cy) {
+Utils.LocalToGobal = function(cw, ch, rect, cx, cy) {
     var x = rect.left;
     var y = rect.top;
     x = ((cx - x) - cw) / cw;
@@ -263,7 +252,7 @@ Utils.LocalToGobal = function (cw, ch, rect, cx, cy) {
  * @param  {canvas} element [description]
  * @return {[type]}         [description]
  */
-Utils.CaptureMouse = function (element) {
+Utils.CaptureMouse = function(element) {
     var mouse = {
             x: 0,
             y: 0,
@@ -275,7 +264,7 @@ Utils.CaptureMouse = function (element) {
         element_scrollTop = document.documentElement.scrollTop,
         offsetLeft = element.offsetLeft,
         offsetTop = element.offsetTop;
-    element.addEventListener('mousemove', function (event) {
+    element.addEventListener('mousemove', function(event) {
         var x, y;
         if (event.pageX || event.pageY) {
             x = event.pageX;
@@ -297,7 +286,7 @@ Utils.CaptureMouse = function (element) {
  * @param  {canvas} element [description]
  * @return {[type]}         [description]
  */
-Utils.CaptureTouch = function (element) {
+Utils.CaptureTouch = function(element) {
     var touch = {
             x: null,
             y: null,
@@ -311,19 +300,19 @@ Utils.CaptureTouch = function (element) {
         offsetLeft = element.offsetLeft,
         offsetTop = element.offsetTop;
 
-    element.addEventListener('touchstart', function (event) {
+    element.addEventListener('touchstart', function(event) {
         touch.isPressed = true;
         touch.event = event;
     }, false);
 
-    element.addEventListener('touchend', function (event) {
+    element.addEventListener('touchend', function(event) {
         touch.isPressed = false;
         touch.x = null;
         touch.y = null;
         touch.event = event;
     }, false);
 
-    element.addEventListener('touchmove', function (event) {
+    element.addEventListener('touchmove', function(event) {
         var x, y, touch_event = event.touches[0];
         if (touch_event.pageX || touch_event.pageY) {
             x = touch_event.pageX;
@@ -348,7 +337,7 @@ Utils.CaptureTouch = function (element) {
  * @param  {[type]} toNumber [description]
  * @return {[type]}          [description]
  */
-Utils.ParseColor = function (color, toNumber) {
+Utils.ParseColor = function(color, toNumber) {
     if (toNumber === true) {
         if (typeof color === 'number') {
             return (color | 0);
@@ -370,7 +359,7 @@ Utils.ParseColor = function (color, toNumber) {
  * @param  {[type]} alpha [description]
  * @return {[type]}       [description]
  */
-Utils.ColorToRGB = function (color, alpha) {
+Utils.ColorToRGB = function(color, alpha) {
     var r, g, b, a;
     if (typeof color === 'string' && color[0] === '#') {
         color = window.parseInt(color.slice(1), 16);
@@ -392,14 +381,14 @@ Utils.ColorToRGB = function (color, alpha) {
  * @param {int} x
  * @param {int} y
  */
-Utils.ContainsPoint = function (rect, x, y) {
+Utils.ContainsPoint = function(rect, x, y) {
     return !(x < rect.x || x > rect.x + rect.width || y < rect.y || y > rect.y + rect.height);
 };
 /**
  * 浏览器帧频对象 获取
  * @return {requestAnimationFrame}           requestAnimationFrame
  */
-window.requestAnimationFrame || (window.requestAnimationFrame = window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || window.oRequestAnimationFrame || function (callback) {
+window.requestAnimationFrame || (window.requestAnimationFrame = window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || window.oRequestAnimationFrame || function(callback) {
     setTimeout(callback, 1000 / 60);
 });
 
