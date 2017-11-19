@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
+    <title>O2O星球</title>
+    <script src="http://libs.baidu.com/jquery/1.7.0/jquery.min.js"></script>
+    <script src="http://www.jq22.com/js/jquery.qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+        
+        #app {
+            width: 800px;
+            height: 600px;
+            top: 50px;
+            left: 6px;
+            position: relative;
+            border: solid 4px;
+        }
+        
+        .wheelbox {
+            left: 50%;
+            top: 40px;
+            transform: translate(-50%, 0);
+            width: 320px;
+            font-size: 44px;
+            position: absolute;
+        }
+        
+        .wheelbox .runNum {
+            margin: 0 auto;
+            padding: 0;
+            overflow: hidden;
+            height: 50px;
+            line-height: 50px;
+            border-top: #CCCCCC solid 1px;
+            border-bottom: #CCCCCC solid 1px;
+            text-align: center;
+            font-weight: bold;
+            position: relative;
+        }
+        
+        .wheelbox .runNum>li {
+            list-style: none;
+            width: 40px;
+            float: left;
+            position: absolute;
+            left: 0px;
+            height: 500px;
+            top: 0px;
+            transition-property: top;
+            transition-duration: 1s;
+            transition-timing-function: ease-in-out;
+        }
+        
+        .wheelbox .runNum>li>div {
+            height: 50px;
+            line-height: 50px;
+            color: red;
+        }
+        
+        #coor {
+            width: 10px;
+            height: 10px;
+            overflow: hidden;
+            cursor: se-resize;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            background-color: #09C;
+        }
+        
+        #box {
+            width: 200px;
+            height: 100px;
+            cursor: move;
+            position: relative;
+            top: 30px;
+            left: 30px;
+            background-color: #FFF;
+            border: 1px solid #CCCCCC;
+            -webkit-box-shadow: 10px 10px 25px #ccc;
+            -moz-box-shadow: 10px 10px 25px #ccc;
+            box-shadow: 10px 10px 25px #ccc;
+        }
+    </style>
+    <script>
+        var Tween = {
+            linear: function(t, b, c, d) { //匀速
+                return c * t / d + b;
+            },
+            easeIn: function(t, b, c, d) { //加速曲线
+                return c * (t /= d) * t + b;
+            },
+            easeOut: function(t, b, c, d) { //减速曲线
+                return -c * (t /= d) * (t - 2) + b;
+            },
+            easeBoth: function(t, b, c, d) { //加速减速曲线
+                if ((t /= d / 2) < 1) {
+                    return c / 2 * t * t + b;
+                }
+                return -c / 2 * ((--t) * (t - 2) - 1) + b;
+            },
+            easeInStrong: function(t, b, c, d) { //加加速曲线
+                return c * (t /= d) * t * t * t + b;
+            },
+            easeOutStrong: function(t, b, c, d) { //减减速曲线
+                return -c * ((t = t / d - 1) * t * t * t - 1) + b;
+            },
+            easeBothStrong: function(t, b, c, d) { //加加速减减速曲线
+                if ((t /= d / 2) < 1) {
+                    return c / 2 * t * t * t * t + b;
+                }
+                return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
+            },
+            elasticIn: function(t, b, c, d, a, p) { //正弦衰减曲线（弹动渐入）
+                if (t === 0) {
+                    return b;
+                }
+                if ((t /= d) == 1) {
+                    return b + c;
+                }
+                if (!p) {
+                    p = d * 0.3;
+                }
+                if (!a || a < Math.abs(c)) {
+                    a = c;
+                    var s = p / 4;
+                } else {
+                    var s = p / (2 * Math.PI) * Math.asin(c / a);
+                }
+                return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / p)) + b;
+            },
+            elasticOut: function(t, b, c, d, a, p) { //正弦增强曲线（弹动渐出）
+                if (t === 0) {
+                    return b;
+                }
+                if ((t /= d) == 1) {
+                    return b + c;
+                }
+                if (!p) {
+                    p = d * 0.3;
+                }
+                if (!a || a < Math.abs(c)) {
+                    a = c;
+                    var s = p / 4;
+                } else {
+                    var s = p / (2 * Math.PI) * Math.asin(c / a);
+                }
+                return a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p) + c + b;
+            },
+            elasticBoth: function(t, b, c, d, a, p) {
+                if (t === 0) {
+                    return b;
+                }
+                if ((t /= d / 2) == 2) {
+                    return b + c;
+                }
+                if (!p) {
+                    p = d * (0.3 * 1.5);
+                }
+                if (!a || a < Math.abs(c)) {
+                    a = c;
+                    var s = p / 4;
+                } else {
+                    var s = p / (2 * Math.PI) * Math.asin(c / a);
+                }
+                if (t < 1) {
+                    return -0.5 * (a * Math.pow(2, 10 * (t -= 1)) *
+                        Math.sin((t * d - s) * (2 * Math.PI) / p)) + b;
+                }
+                return a * Math.pow(2, -10 * (t -= 1)) *
+                    Math.sin((t * d - s) * (2 * Math.PI) / p) * 0.5 + c + b;
+            },
+            backIn: function(t, b, c, d, s) { //回退加速（回退渐入）
+                if (typeof s == 'undefined') {
+                    s = 1.70158;
+                }
+                return c * (t /= d) * t * ((s + 1) * t - s) + b;
+            },
+            backOut: function(t, b, c, d, s) {
+                if (typeof s == 'undefined') {
+                    s = 3.70158; //回缩的距离
+                }
+                return c * ((t = t / d - 1) * t * ((s + 1) * t + s) + 1) + b;
+            },
+            backBoth: function(t, b, c, d, s) {
+                if (typeof s == 'undefined') {
+                    s = 1.70158;
+                }
+                if ((t /= d / 2) < 1) {
+                    return c / 2 * (t * t * (((s *= (1.525)) + 1) * t - s)) + b;
+                }
+                return c / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + b;
+            },
+            bounceIn: function(t, b, c, d) { //弹球减振（弹球渐出）
+                return c - Tween['bounceOut'](d - t, 0, c, d) + b;
+            },
+            bounceOut: function(t, b, c, d) {
+                if ((t /= d) < (1 / 2.75)) {
+                    return c * (7.5625 * t * t) + b;
+                } else if (t < (2 / 2.75)) {
+                    return c * (7.5625 * (t -= (1.5 / 2.75)) * t + 0.75) + b;
+                } else if (t < (2.5 / 2.75)) {
+                    return c * (7.5625 * (t -= (2.25 / 2.75)) * t + 0.9375) + b;
+                }
+                return c * (7.5625 * (t -= (2.625 / 2.75)) * t + 0.984375) + b;
+            },
+            bounceBoth: function(t, b, c, d) {
+                if (t < d / 2) {
+                    return Tween['bounceIn'](t * 2, 0, c, d) * 0.5 + b;
+                }
+                return Tween['bounceOut'](t * 2 - d, 0, c, d) * 0.5 + c * 0.5 + b;
+            }
+        }
+    </script>
+    <script>
+        var utils = {
+            gUid: function() { //产生ID
+                return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+                    let r = Math.random() * 16 | 0;
+                    let v = c == "x" ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                }).toUpperCase();
+            },
+            animate: function(child, json, times, fx, callback) {
+                let original = {};
+                let stime = Date.now();
+                if (typeof times == 'undefined') {
+                    times = 400;
+                    fx = 'linear';
+                }
+                if (typeof times == 'string') {
+                    if (typeof fx == 'function') {
+                        fn = fx;
+                    }
+                    fx = times;
+                    times = 400;
+                } else if (typeof times == 'function') {
+                    fn = times;
+                    times = 400;
+                    fx = 'linear';
+                } else if (typeof times == 'number') {
+                    if (typeof fx == 'function') {
+                        fn = fx;
+                        fx = 'linear';
+                    } else if (typeof fx == 'undefined') {
+                        fx = 'linear';
+                    }
+                }
+                for (let key in json) {
+                    original[key] = child[key] || 0;
+                };
+                child.animateid = this.gUid();
+                child.animate = function() {
+                    let ctime = Date.now();
+                    let scale = 1 - Math.max(0, stime - ctime + times) / times;
+                    if (scale == 1) {
+                        child.animateid = null;
+                        child.animate = null;
+                        if (callback) {
+                            callback.call(child);
+                        }
+                    } else {
+                        for (let key in json) {
+                            child[key] = Math.abs(Tween[fx](scale * times, original[key], json[key] - original[key], times));
+                        }
+                    };
+                };
+            }
+        }
+        window.requestAnimationFrame || (window.requestAnimationFrame = window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || window.oRequestAnimationFrame || function(callback) {
+            setTimeout(callback, 1000 / 60);
+        });
+        window.cancelAnimationFrame || (window.cancelAnimationFrame = window.mozCancelAnimationFrame || window.webkitCancelAnimationFrame || window.msCancelAnimationFrame || window.oCancelAnimationFrame || window.clearTimeout);
+    </script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="wheelbox">
+            <ul class="runNum">
+            </ul>
+        </div>
+        <div id="o2omap" style="position: relative;top: 150px;">
+            <img id="o2oimg" width="100%" style="position: absolute;z-index:-1;" src="./images/o2omap.png" />
+        </div>
+        <div id="coor"></div>
+    </div>
+    <script>
+        class Stage {
+            constructor(canvas) {
+                this.childList = [];
+                this.width = canvas.offsetWidth;
+                this.height = canvas.offsetHeight;
+                this.context = canvas.getContext("2d");
+                this.draw();
+            };
+            addChild(child) {
+                if ("activation" in child) {
+                    child.activation(this.context);
+                    this.childList.push(child);;
+                };
+            };
+            removeChild(child) {
+                for (let i = 0, l = this.childList.length; i < l; i++) {
+                    if (this.childList[i] == child) {
+                        this.childList.splice(i, 1);
+                        break;
+                    }
+                }
+            };
+            draw() {
+                this.context.clearRect(0, 0, this.width, this.height);
+                for (let i = this.childList.length - 1; i >= 0; i--) {
+                    let child = this.childList[i];
+                    if (child && child.visible) {
+                        child.draw();
+                        child.animate && child.animate();
+                    }
+                };
+                window.requestAnimationFrame(this.draw.bind(this));
+            };
+        }
+    </script>
+    <script>
+        class WheelUi {
+            constructor(el, size) {
+                this.gaph = 50;
+                this.el = el;
+                this.els = [];
+                this.size = size;
+                this.draw();
+            };
+            draw() {
+                if (this.el) {
+                    let li, fg = document.createDocumentFragment();
+                    for (let i = 0; i < this.size; i++) {
+                        li = document.createElement("li");
+                        li.style.left = (i * 40) + "px";
+                        for (let k = 0; k < 10; k++) {
+                            let div = document.createElement("div");
+                            div.innerText = k;
+                            li.appendChild(div);
+                        };
+                        this.els.push(li);
+                        fg.appendChild(li);
+                    };
+                    this.el.appendChild(fg);
+                };
+            };
+            updata(sum) {
+                let str = sum + "";
+                let size = str.length;
+                if (size <= this.size) {
+                    let gap = this.size - size;
+                    for (let i = this.size - 1; i >= 0; i--) {
+                        this.els[i].style.top = -((str.charAt(i - gap) || 0) * this.gaph) + "px";
+                    };
+                };
+            };
+        }
+        class Ball {
+            constructor(x, y) {
+                this.ctx;
+                this.grd;
+                this.x = x;
+                this.y = y;
+                this.alpha = 1;
+                this.radius = 1;
+                this.visible = true;
+                this.frame = 0;
+            };
+            reload() {
+                this.frame = 0;
+                this.alpha = 1;
+                this.radius = 1;
+            };
+            activation(ctx) {
+                this.ctx = ctx;
+                this.grd = this.ctx.createRadialGradient(this.x, this.y, 4, this.x, this.y, 8);
+                this.grd.addColorStop(0, "#09F");
+                this.grd.addColorStop(1, "#09F");
+            };
+            draw() {
+                if (this.ctx) {
+                    this.ctx.fillStyle = "#09F"; //this.grd;
+                    this.ctx.save(); //保存画笔状态
+                    this.ctx.globalAlpha = this.alpha;
+                    this.ctx.beginPath();
+                    this.ctx.arc(this.x, this.y, 2, 0, Math.PI * 2, true);
+                    this.ctx.fill();
+                    for (let i = 0; i < 3; i++) {
+                        this.ctx.strokeStyle = '#09F';
+                        this.ctx.beginPath();
+                        this.ctx.arc(this.x, this.y, this.radius * i, 0, Math.PI * 2, true);
+                        this.ctx.stroke();
+                    };
+                    this.ctx.restore(); //绘制结束以后，恢复画笔状态
+                }
+            };
+        }
+    </script>
+    <script>
+        let ctx, wheel, myball, layer, canvasmap;
+        let app = document.querySelector("#app");
+        let o2omap = document.querySelector("#o2omap");
+        let o2oimg = document.querySelector("#o2oimg");
+        let pools = [];
+        let resize = (map) => {
+            let w = o2oimg.width;
+            let h = o2oimg.height;
+            map.setAttribute("width", w + "px");
+            map.setAttribute("height", h + "px");
+        };
+        o2oimg.addEventListener("load", () => {
+            let wheel = new WheelUi(document.querySelector(".runNum"), 8);
+            let cot = 0;
+            canvasmap = document.createElement('canvas');
+            canvasmap.style.cssText = "width:100%;height:100%";
+            resize(canvasmap);
+            o2omap.appendChild(canvasmap);
+            layer = new Stage(canvasmap);
+            let cots = 0;
+            let tid = setInterval(() => {
+                cot++;
+                cots++;
+                if (cot % 8 == 0) {
+                    wheel.updata(parseInt(Math.random() * 1291245));
+                    cot = 0;
+                }
+                for (let i = 0, l = 10; i < l; i++) {
+                    let bll, x = 160 + Math.random() * 500;
+                    let y = Math.random() * 391;
+                    if (pools.length) {
+                        bll = pools.shift();
+                        bll.reload();
+                        bll.x = x;
+                        bll.y = y;
+                    } else {
+                        bll = new Ball(x, y);
+                    };
+                    layer.addChild(bll);
+                    (function(el) {
+                        utils.animate(el, {
+                            alpha: 0,
+                            radius: 10
+                        }, 2500, 'easeOut', function() {
+                            layer.removeChild(el);
+                            pools.push(el);
+                            // utils.animate(el, {
+                            //     alpha: 0,
+                            //     radius: 2
+                            // }, 1500, 'elasticOut', function() {
+                            //     layer.removeChild(el);
+                            //     pools.push(el);
+                            //     console.log("执行完毕");
+                            // });
+                        });
+                    })(bll);
+                };
+            }, 200);
+        });
+    </script>
+    <script>
+        $(function() {
+            $(document).mousemove(function(e) {
+                if (!!this.move) {
+                    let posix = !document.move_target ? {
+                            'x': 0,
+                            'y': 0
+                        } : document.move_target.posix,
+                        callback = document.call_down || function() {
+                            $(this.move_target).css({
+                                'top': e.pageY - posix.y,
+                                'left': e.pageX - posix.x
+                            });
+                        };
+                    callback.call(this, e, posix);
+                }
+            }).mouseup(function(e) {
+                if (!!this.move) {
+                    let callback = document.call_up || function() {};
+                    callback.call(this, e);
+                    $.extend(this, {
+                        'move': false,
+                        'move_target': null,
+                        'call_down': false,
+                        'call_up': false
+                    });
+                }
+            });
+
+            let $box = $('#app').mousedown(function(e) {
+                let offset = $(this).offset();
+
+                this.posix = {
+                    'x': e.pageX - offset.left,
+                    'y': e.pageY - offset.top
+                };
+                $.extend(document, {
+                    'move': true,
+                    'move_target': this
+                });
+            }).on('mousedown', '#coor', function(e) {
+                let posix = {
+                    'w': $box.width(),
+                    'h': $box.height(),
+                    'x': e.pageX,
+                    'y': e.pageY
+                };
+                $.extend(document, {
+                    'move': true,
+                    'call_down': function(e) {
+                        $box.css({
+                            'width': Math.max(30, e.pageX - posix.x + posix.w),
+                            'height': Math.max(30, e.pageY - posix.y + posix.h)
+                        });
+                        resize(canvasmap);
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+</body>
+
+</html>

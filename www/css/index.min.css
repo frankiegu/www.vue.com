@@ -8,7 +8,7 @@
  * @author: ningxiao
  * @qq:363305175
  * @description:  VUE_TEST
- * @date: 2017/09/30 14:56:01
+ * @date: 2017/10/11 18:09:23
  * -------------------------------------------------------------
  */
 /*!
@@ -21,18 +21,8 @@
  * @author: ningxiao
  * @qq:363305175
  * @description:  VUE_TEST
- * @date: 2017/09/30 14:56:01
+ * @date: 2017/10/11 18:09:23
  * -------------------------------------------------------------
  */
-@charset "utf-8";
-.box {
-  color: #fd74aa;
-  border-color: #ffffff;
-}
-.box div {
-  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-  -o-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-}
-
+.box{color:#fd74aa;border-color:#fff}.box div{-webkit-box-shadow:0 0 5px rgba(0,0,0,.3);-o-box-shadow:0 0 5px rgba(0,0,0,.3);box-shadow:0 0 5px rgba(0,0,0,.3)}
 /*# sourceMappingURL=index.min.css.map*/

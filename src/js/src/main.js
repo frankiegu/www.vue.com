@@ -3,6 +3,9 @@ import Vuex from 'vuex';
 import axios from 'axios';
 import VueRouter from 'vue-router';
 import Order from './views/order.vue';
+//使用自定义webpack加载模块 tpl模块
+import tpl from './views/test.tpl';
+console.log("----------------", tpl);
 Vue.use(Vuex);
 Vue.use(VueRouter);
 const Foo = {
