@@ -5,6 +5,8 @@
  * webpack --watch 监听文件自动压缩
  * webpack-dev-server --inline  自动刷新
  * webpack --watch  --env.js index 自动监听index入口文件修改
+ * loader 主要是处理打包合并之前的 例如 import Vuex from 'vuex'; 相当于执行 vue-loader 输出vuex文件读取编译
+ * plugin 主要处理打包之后输出结果 extract-text-webpack-plugin
  */
 const os = require('os');
 const path = require('path');
@@ -69,8 +71,12 @@ const config = {
             main: "./src/main.js",
             route: "./src/route.js",
             index: "./src/index.js",
+<<<<<<< HEAD
             virtual: "./src/virtual.js",
             charts:"./src/charts.js",
+=======
+            virtual: "./src/virtual.js"
+>>>>>>> 6de3aa95aca6842f5e64f186748b05f9f8daac50
         }
     },
     css: {
@@ -115,6 +121,9 @@ const webpackconfig = {
                     collapseWhitespace: false
                 }
             }],
+        }, {
+            test: /\.tpl$/,
+            loader: 'html-template-loader'
         }]
     },
     resolve: {
