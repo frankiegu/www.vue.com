@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body style="height: 100%; margin: 0">
+    <div id="container" style="height: 100%;width:100%"></div>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/jquery/jquery.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts-all-3.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ZUONbpqGBsYGXNIYHicvbAbM"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+    <script type="text/javascript">
+        function GeoJsonMap(data) {
+            var coordinates;
+            data = data.districts[0];
+            coordinates = data.polyline.split(";");
+            coordinates.forEach(function (value, index, array) {
+                if (value.indexOf("|") != -1) {
+                    value = value.split("|")[0];
+                };
+                array[index] = value.split(",");
+            });
+            return {
+                type: "FeatureCollection",
+                name: data.name,
+                features: [{
+                    type: "Feature",
+                    geometry: {
+                        type: "Polygon",
+                        center: data.center,
+                        coordinates: [coordinates]
+                    },
+                    properties: {
+                        name: data.name,
+                        adcode: data.adcode,
+                        citycode: data.citycode
+                    }
+                }]
+            };
+        };
+    </script>
+    <script type="text/javascript">
+        var dom = document.getElementById("container");
+        var myChart = echarts.init(dom);
+        var url = 'http://restapi.amap.com/v3/config/district?keywords=100000&subdistrict=1&key=5cc9a86a1573516194ef8250406602e2&extensions=all';
+        var option = {
+            title: {
+                text: '中国点亮 (2017)',
+                subtext: 'Data from bj.meituan.com',
+                sublink: 'http://bj.meituan.com/',
+                left: 'right'
+            },
+            series: [
+                {
+                    name: '中国',
+                    type: 'map',   //图表类型为地图
+                    mapType: 'china',//地图类型中国地图 世界地图world，
+                    selectedMode: 'single', //选中模式，可以设置多选模式和单选，不能选择则删除删除属性
+                    hoverable: false,   //悬浮是否高亮
+                    center: [109.076395, 34.387777], // 百度地图中心经纬度
+                    roam: true, // 是否开启拖拽缩放，可以只设置 'scale' 或者 'move'
+                    itemStyle: {
+                        normal: {        //地图样式
+                            areaColor: '#323c48',
+                            borderColor: '#111', //地图边界颜色
+                            //color: '#323c48'  //地图颜色
+                        },
+                        emphasis: {   //地图选中时样式
+                            label: {
+                                show: true,
+                                textStyle: {
+                                    color: '#fff' //选中时区域名字颜色
+                                },
+                            },
+                            areaColor: '#2a333d',
+                            //color: '#71D1FF' //选中时颜色
+                        }
+                    },
+                    data: [
+                        { name: '四川', selected: true }   //广东默认别选中
+                    ]
+                }
+            ]
+        };
+        myChart.setOption(option);
+        if (option && typeof option === "object") {
+            myChart.setOption(option, true);
+        }
+    </script>
+</body>
+
+</html>

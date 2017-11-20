@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body style="height: 100%; margin: 0">
+    <div id="container" style="height: 100%;width:100%"></div>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/jquery/jquery.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts-all-3.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ZUONbpqGBsYGXNIYHicvbAbM"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+    <script type="text/javascript">
+        function GeoJsonMap(data) {
+            var coordinates;
+            data = data.districts[0];
+            coordinates = data.polyline.split(";");
+            coordinates.forEach(function (value, index, array) {
+                if (value.indexOf("|") != -1) {
+                    value = value.split("|")[0];
+                };
+                array[index] = value.split(",");
+            });
+            return {
+                type: "FeatureCollection",
+                name: data.name,
+                features: [{
+                    type: "Feature",
+                    geometry: {
+                        type: "Polygon",
+                        center: data.center,
+                        coordinates: [coordinates]
+                    },
+                    properties: {
+                        name: data.name,
+                        adcode: data.adcode,
+                        citycode: data.citycode
+                    }
+                }]
+            };
+        };
+    </script>
+    <script type="text/javascript">
+        var dom = document.getElementById("container");
+        var myChart = echarts.init(dom);
+        var app = {};
+        option = null;
+        var url = 'http://restapi.amap.com/v3/config/district?keywords=100000&subdistrict=1&key=5cc9a86a1573516194ef8250406602e2&extensions=all';
+        myChart.showLoading();
+
+        $.getJSON(url, function (res) {
+            var data = GeoJsonMap(res);
+            myChart.hideLoading();
+            echarts.registerMap('USA', data);
+            option = {
+                title: {
+                    text: 'USA Population Estimates (2012)',
+                    subtext: 'Data from www.census.gov',
+                    sublink: 'http://www.census.gov/popest/data/datasets.html',
+                    left: 'right'
+                },
+                visualMap: {
+                    left: 'right',
+                    min: 500000,
+                    max: 38000000,
+                    inRange: {
+                        color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+                    },
+                    text: ['High', 'Low'],           // 文本，默认为数值文本
+                    calculable: true
+                },
+                toolbox: {
+                    show: true,
+                    left: 'left',
+                    top: 'top',
+                    feature: {
+                        dataView: { readOnly: false },
+                        restore: {},
+                        saveAsImage: {}
+                    }
+                },
+                series: [
+                    {
+                        name: 'USA PopEstimates',
+                        type: 'map',
+                        roam: true,
+                        map: 'USA',
+                        itemStyle: {
+                            emphasis: { label: { show: true } }
+                        },
+                        // 文本位置修正
+                        textFixed: {
+                            Alaska: [20, -20]
+                        }
+                    }
+                ]
+            };
+            myChart.setOption(option);
+        });;
+        if (option && typeof option === "object") {
+            myChart.setOption(option, true);
+        }
+    </script>
+</body>
+
+</html>

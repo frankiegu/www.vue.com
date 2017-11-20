@@ -63,13 +63,14 @@ const config = {
         suffix: ".min.js",
         output: "script/",
         datasource: {
-            // vue: "./src/vue.js",
-            hls: "./src/hls.js"
-                // play: "./src/play.js",
-                // main: "./src/main.js",
-                // route: "./src/route.js",
-                // index: "./src/index.js",
-                // virtual: "./src/virtual.js"
+            vue: "./src/vue.js",
+            hls: "./src/hls.js",
+            play: "./src/play.js",
+            main: "./src/main.js",
+            route: "./src/route.js",
+            index: "./src/index.js",
+            virtual: "./src/virtual.js",
+            charts:"./src/charts.js",
         }
     },
     css: {
@@ -139,7 +140,8 @@ const webpackconfig = {
             filename: "./script/libs/commons.min.js"
         }),
         new webpack.DefinePlugin({
-            __VERSION__: JSON.stringify(pkgjson.version)
+            __VERSION__: JSON.stringify(pkgjson.version),
+            __DEV__:false,
         }),
         new webpack.BannerPlugin(`
 -------------------------------------------------------------

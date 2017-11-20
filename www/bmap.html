@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body style="height: 100%; margin: 0">
+    <div id="busmap" style="height: 50%;width:50%;float:left"></div>
+    <div id="tracksmap" style="height: 50%;width:50%;float:left"></div>
+    <div id="weibomap" style="height: 50%;width:50%;display: inline-block;"></div>
+    <div id="btmap" style="height: 50%;width:50%;float:right;"></div>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/jquery/jquery.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts-all-3.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ZUONbpqGBsYGXNIYHicvbAbM"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/resource/echarts-gl-latest/dist/echarts-gl.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            var dom = document.getElementById("busmap");
+            var myChart = echarts.init(dom);
+            var app = {};
+            var option = null;
+            app.title = '北京公交路线 - 线特效';
+            $.get('/asset/lines-bus.json', function (data) {
+                var hStep = 300 / (data.length - 1);
+                var busLines = [].concat.apply([], data.map(function (busLine, idx) {
+                    var prevPt, points = [];
+                    for (var i = 0; i < busLine.length; i += 2) {
+                        var pt = [busLine[i], busLine[i + 1]];
+                        if (i > 0) {
+                            pt = [
+                                prevPt[0] + pt[0],
+                                prevPt[1] + pt[1]
+                            ];
+                        }
+                        prevPt = pt;
+                        points.push([pt[0] / 10000, pt[1] / 10000]);
+                    };
+                    return {
+                        coords: points,
+                        lineStyle: {
+                            normal: {
+                                color: echarts.color.modifyHSL('#5A94DF', Math.round(hStep * idx))
+                            }
+                        }
+                    };
+                }));
+                myChart.setOption(option = {
+                    bmap: {
+                        center: [116.46, 39.92],
+                        zoom: 10,
+                        roam: true,
+                    },
+                    series: [{
+                        type: 'lines',
+                        coordinateSystem: 'bmap',
+                        polyline: true,
+                        data: busLines,
+                        silent: true,
+                        lineStyle: {
+                            normal: {
+                                opacity: 0.2,
+                                width: 1
+                            }
+                        },
+                        progressiveThreshold: 500,
+                        progressive: 200
+                    }, {
+                        type: 'lines',
+                        coordinateSystem: 'bmap',
+                        polyline: true,
+                        data: busLines,
+                        lineStyle: {
+                            normal: {
+                                width: 0
+                            }
+                        },
+                        effect: {
+                            constantSpeed: 20,
+                            show: true,
+                            trailLength: 0.1,
+                            symbolSize: 1.5
+                        },
+                        zlevel: 1
+                    }]
+                });
+                myChart.setOption(option, true);
+                let tid = setInterval(() => {
+                    if (dom.querySelectorAll(".anchorBL").length > 1) {
+                        dom.querySelectorAll(".anchorBL").forEach(function (el, index) {
+                            el.style.display = "none";
+                        });
+                        console.log("结束循环");
+                        clearInterval(tid);
+                    };
+                }, 500);
+            });
+            window.addEventListener("resize",myChart.resize);
+        })();
+    </script>
+    <script type="text/javascript">
+        (function () {
+            var dom = document.getElementById("tracksmap");
+            var myChart = echarts.init(dom);
+            var app = {};
+            var option = null;
+            app.title = '热力图与百度地图扩展';
+            $.get('/asset/hangzhou-tracks.json', function (data) {
+                var points = [].concat.apply([], data.map(function (track) {
+                    return track.map(function (seg) {
+                        return seg.coord.concat([1]);
+                    });
+                }));
+                myChart.setOption(option = {
+                    animation: false,
+                    bmap: {
+                        center: [120.13066322374, 30.240018034923],
+                        zoom: 14,
+                        roam: true
+                    },
+                    visualMap: {
+                        show: false,
+                        top: 'top',
+                        min: 0,
+                        max: 5,
+                        seriesIndex: 0,
+                        calculable: true,
+                        inRange: {
+                            color: ['blue', 'blue', 'green', 'yellow', 'red']
+                        }
+                    },
+                    series: [{
+                        type: 'heatmap',
+                        coordinateSystem: 'bmap',
+                        data: points,
+                        pointSize: 5,
+                        blurSize: 6
+                    }]
+                });
+                myChart.setOption(option, true);
+                let tid = setInterval(() => {
+                    if (dom.querySelectorAll(".anchorBL").length > 1) {
+                        dom.querySelectorAll(".anchorBL").forEach(function (el, index) {
+                            el.style.display = "none";
+                        });
+                        console.log("结束循环");
+                        clearInterval(tid);
+                    };
+                }, 500);
+            });
+            window.addEventListener("resize",myChart.resize);
+        })();
+    </script>
+    <script type="text/javascript">
+        (function () {
+            var dom = document.getElementById("weibomap");
+            var myChart = echarts.init(dom);
+            var app = {};
+            var option = {
+                // 加载 bmap 组件
+                bmap: {
+                    center: [109.076395, 34.387777], // 百度地图中心经纬度
+                    zoom: 5, // 百度地图缩放
+                    roam: true, // 是否开启拖拽缩放，可以只设置 'scale' 或者 'move'
+                    mapStyle: {
+                        'styleJson': [{
+                            'featureType': 'water',
+                            'elementType': 'all',
+                            'stylers': {
+                                'color': '#031628'
+                            }
+                        }, {
+                            'featureType': 'land',
+                            'elementType': 'geometry',
+                            'stylers': {
+                                'color': '#000102'
+                            }
+                        }, {
+                            'featureType': 'highway',
+                            'elementType': 'all',
+                            'stylers': {
+                                'visibility': 'off'
+                            }
+                        }, {
+                            'featureType': 'arterial',
+                            'elementType': 'geometry.fill',
+                            'stylers': {
+                                'color': '#000000'
+                            }
+                        }, {
+                            'featureType': 'arterial',
+                            'elementType': 'geometry.stroke',
+                            'stylers': {
+                                'color': '#0b3d51'
+                            }
+                        }, {
+                            'featureType': 'local',
+                            'elementType': 'geometry',
+                            'stylers': {
+                                'color': '#000000'
+                            }
+                        }, {
+                            'featureType': 'railway',
+                            'elementType': 'all',
+                            'stylers': {
+                                "visibility": "off"
+                            }
+                        }, {
+                            'featureType': 'subway',
+                            'elementType': 'all',
+                            'stylers': {
+                                "visibility": "off"
+                            }
+                        }, {
+                            'featureType': 'building',
+                            'elementType': 'geometry.fill',
+                            'stylers': {
+                                'color': '#000000'
+                            }
+                        }, {
+                            'featureType': 'all',
+                            'elementType': 'labels.text.fill',
+                            'stylers': {
+                                'color': '#857f7f'
+                            }
+                        }, {
+                            'featureType': 'all',
+                            'elementType': 'labels.text.stroke',
+                            'stylers': {
+                                'color': '#000000'
+                            }
+                        }, {
+                            'featureType': 'building',
+                            'elementType': 'geometry',
+                            'stylers': {
+                                'color': '#022338'
+                            }
+                        }, {
+                            'featureType': 'green',
+                            'elementType': 'geometry',
+                            'stylers': {
+                                'color': '#062032'
+                            }
+                        }, {
+                            'featureType': 'boundary',
+                            'elementType': 'all',
+                            'stylers': {
+                                'color': '#465b6c'
+                            }
+                        }, {
+                            "featureType": "poi",
+                            "elementType": "all",
+                            "stylers": {
+                                "visibility": "off"
+                            }
+                        }, {
+                            'featureType': 'manmade',
+                            'elementType': 'all',
+                            'stylers': {
+                                'visibility': 'off'
+                            }
+                        }, {
+                            'featureType': 'label',
+                            'elementType': 'all',
+                            'stylers': {
+                                'visibility': 'off'
+                            }
+                        }]
+                    }
+                },
+                series: [{
+                    name: '弱',
+                    type: 'scatterGL',
+                    coordinateSystem: 'bmap',
+                    symbolSize: 1,
+                    large: true,
+                    itemStyle: {
+                        normal: {
+                            shadowBlur: 2,
+                            shadowColor: 'rgba(37, 140, 249, 0.8)',
+                            color: 'rgba(37, 140, 249, 0.8)'
+                        }
+                    },
+                    data: []
+                }, {
+                    name: '中',
+                    type: 'scatterGL',
+                    coordinateSystem: 'bmap',
+                    symbolSize: 1,
+                    large: true,
+                    itemStyle: {
+                        normal: {
+                            shadowBlur: 2,
+                            shadowColor: 'rgba(14, 241, 242, 0.8)',
+                            color: 'rgba(14, 241, 242, 0.8)'
+                        }
+                    },
+                    data: []
+                }, {
+                    name: '强',
+                    type: 'scatterGL',
+                    coordinateSystem: 'bmap',
+                    symbolSize: 1,
+                    large: true,
+                    itemStyle: {
+                        normal: {
+                            shadowBlur: 2,
+                            shadowColor: 'rgba(255, 255, 255, 0.8)',
+                            color: 'rgba(255, 255, 255, 0.8)'
+                        }
+                    },
+                    data: []
+                }]
+            };
+            app.title = '微博点亮';
+            $.get('/asset/weibo.json', function (data) {
+                data = data.map(function (serieData, idx) {
+                    var px = serieData[0] / 1000;
+                    var py = serieData[1] / 1000;
+                    var res = [
+                        [px, py]
+                    ];
+                    for (var i = 2; i < serieData.length; i += 2) {
+                        var dx = serieData[i] / 1000;
+                        var dy = serieData[i + 1] / 1000;
+                        var x = px + dx;
+                        var y = py + dy;
+                        res.push([x.toFixed(2), y.toFixed(2), 1]);
+
+                        px = x;
+                        py = y;
+                    }
+                    return res;
+                });
+                
+                option.series[0].data = data[0];
+                option.series[1].data = data[1];
+                option.series[2].data = data[2];
+                myChart.setOption(option);
+                let tid = setInterval(() => {
+                    if (dom.querySelectorAll(".anchorBL").length > 1) {
+                        dom.querySelectorAll(".anchorBL").forEach(function (el, index) {
+                            el.style.display = "none";
+                        });
+                        console.log("结束循环");
+                        clearInterval(tid);
+                    };
+                }, 500);
+            });
+            window.addEventListener("resize",myChart.resize);
+        })();
+    </script>
+</body>
+
+</html>

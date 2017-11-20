@@ -26,20 +26,20 @@ const store = new Vuex.Store({
     }
 });
 //定义过滤器
-Vue.filter('uppercase', function(value) {
+Vue.filter('uppercase', function (value) {
     return value.toUpperCase();
 });
 new Vue({ //创建一个异步vue实例, 挂载在body上面
     el: '#app',
     components: {
         'index': () => {
-            return import ('./views/index.vue');
+            return import('./views/index.vue');
         }
     }
 });
 axios.get("/sign?name=35892.mp4&size=8290785").then((response) => {
     console.log("->", response.data)
-}).catch(function(error) {
+}).catch(function (error) {
     console.log(error);
 });
 console.log($("#app"));
@@ -59,16 +59,16 @@ const vuea = new Vue({
     data() {
         return datasource;
     },
-    created: function() {
+    created: function () {
         // `this` 指向 vm 实例
         console.log('a is: ' + this.name);
     }
 });
 //监听数据改变
-vuea.$watch('name', function(newVal, oldVal) {
+vuea.$watch('name', function (newVal, oldVal) {
     console.log(newVal, oldVal);
 });
-Vue.nextTick(function() {
+Vue.nextTick(function () {
     console.log("更新数据", vuea.$el);
     //vm.$el.textContent === 'new message' // true
 });
@@ -104,7 +104,7 @@ const watchExampleVM = new Vue({
     },
     watch: {
         // 如果 question 发生改变，这个函数就会运行
-        question: function(newQuestion) {
+        question: function (newQuestion) {
             this.answer = '提问中...';
             this.getAnswer();
         }
@@ -115,23 +115,23 @@ const watchExampleVM = new Vue({
         // ajax请求直到用户输入完毕才会发出
         // 学习更多关于 _.debounce function (and its cousin
         // _.throttle), 参考: https://lodash.com/docs#debounce 工具库
-        getAnswer: _.debounce(function() { //工具库
-                if (this.question.indexOf('?') === -1) {
-                    this.answer = '问题通常都会问号';
-                    return;
-                };
-                this.answer = '解答中...'
-                axios.get('https://yesno.wtf/api').then((response) => {
-                    this.answer = _.capitalize(response.data.answer);
-                }).catch((error) => {
-                    this.answer = '问题API异常. ' + error;
-                });
-            }, 500 // 这是我们为用户停止输入等待的毫秒数
+        getAnswer: _.debounce(function () { //工具库
+            if (this.question.indexOf('?') === -1) {
+                this.answer = '问题通常都会问号';
+                return;
+            };
+            this.answer = '解答中...'
+            axios.get('https://yesno.wtf/api').then((response) => {
+                this.answer = _.capitalize(response.data.answer);
+            }).catch((error) => {
+                this.answer = '问题API异常. ' + error;
+            });
+        }, 500 // 这是我们为用户停止输入等待的毫秒数
         )
     }
 });
 Vue.component('todo-itemx', () => {
-    return import ('./views/itemx.vue');
+    return import('./views/itemx.vue');
 });
 new Vue({
     el: '#todo-list-example',
@@ -139,23 +139,23 @@ new Vue({
         return {
             newTodoText: '',
             todos: [{
-                    id: 1,
-                    title: 'Do the dishes',
-                },
-                {
-                    id: 2,
-                    title: 'Take out the trash',
-                },
-                {
-                    id: 3,
-                    title: 'Mow the lawn'
-                }
+                id: 1,
+                title: 'Do the dishes',
+            },
+            {
+                id: 2,
+                title: 'Take out the trash',
+            },
+            {
+                id: 3,
+                title: 'Mow the lawn'
+            }
             ],
             nextTodoId: 4
         }
     },
-    methods: {
-        addNewTodo: function(type, event) {
+    methods: {//可以直接通过 VM 实例访问这些方法，或者在指令表达式中使用
+        addNewTodo: function (type, event) {
             if (event) {
                 console.log(type, event.target.tagName);
             };
@@ -165,17 +165,71 @@ new Vue({
             });
             this.newTodoText = '';
         },
-        removefun: function(index) {
+        removefun: function (index) {
             this.todos.splice(index, 1);
         }
     },
     directives: { //注册一个全局自定义指令 v-focus
         focus: {
-            inserted: function(el) {
+            inserted: function (el) {
                 // 聚焦元素
                 el.focus();
             }
         }
+    },
+    beforeCreate: function () {
+        console.group('beforeCreate 创建前状态===============》');
+        console.log("%c%s", "color:red", "el     : " + this.$el); //undefined
+        console.log("%c%s", "color:red", "data   : " + this.$data); //undefined 
+        //console.log("%c%s", "color:red", "todos: " + this.todos)
+    },
+    created: function () {
+        console.group('created 创建完毕状态===============》');
+        console.log("%c%s", "color:red", "el     : " + this.$el); //undefined
+        console.log("%c%s", "color:red", "data   : " + this.$data); //已被初始化 
+        //console.log("%c%s", "color:red", "todos: " + this.todos); //已被初始化
+    },
+    beforeMount: function () {
+        console.group('beforeMount 挂载前状态===============》');
+        console.log("%c%s", "color:red", "el     : " + (this.$el)); //已被初始化
+        console.log(this.$el);
+        console.log("%c%s", "color:red", "data   : " + this.$data); //已被初始化  
+        //console.log("%c%s", "color:red", "todos: " + this.todos); //已被初始化  
+    },
+    mounted: function () {
+        console.group('mounted 挂载结束状态===============》');
+        console.log("%c%s", "color:red", "el     : " + this.$el); //已被初始化
+        console.log(this.$el);
+        console.log("%c%s", "color:red", "data   : " + this.$data); //已被初始化
+        //console.log("%c%s", "color:red", "todos: " + this.todos); //已被初始化 
+    },
+    beforeUpdate: function () {
+        console.group('beforeUpdate 更新前状态===============》');
+        console.log("%c%s", "color:red", "el     : " + this.$el);
+        console.log(this.$el);
+        console.log("%c%s", "color:red", "data   : " + this.$data);
+       //console.log("%c%s", "color:red", "todos: " + this.todos);
+    },
+    updated: function () {
+        console.group('updated 更新完成状态===============》');
+        console.log("%c%s", "color:red", "el     : " + this.$el);
+        console.log(this.$el);
+        console.log("%c%s", "color:red", "data   : " + this.$data);
+        //console.log("%c%s", "color:red", "todos: " + this.todos);
+    },
+    beforeDestroy: function () {
+        console.group('beforeDestroy 销毁前状态===============》');
+        console.log("%c%s", "color:red", "el     : " + this.$el);
+        console.log(this.$el);
+        console.log("%c%s", "color:red", "data   : " + this.$data);
+        //console.log("%c%s", "color:red", "todos: " + this.todos);
+    },
+    destroyed: function () {
+        console.group('destroyed 销毁完成状态===============》');
+        console.log("%c%s", "color:red", "el     : " + this.$el);
+        console.log(this.$el);
+        console.log("%c%s", "color:red", "data   : " + this.$data);
+        //console.log("%c%s", "color:red", "todos: " + this.todos)
     }
 });
 var data = { counter: 0 };
@@ -183,7 +237,7 @@ Vue.component('simple-counter', {
     template: '<button v-on:click="counter += 1">{{ counter }}</button>',
     // 技术上 data 的确是一个函数了，因此 Vue 不会警告，
     // 但是我们返回给每个组件的实例的却引用了同一个data对象
-    data: function() {
+    data: function () {
         return data;
     }
 })
